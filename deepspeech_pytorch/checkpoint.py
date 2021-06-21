@@ -23,7 +23,6 @@ class CheckpointHandler(ModelCheckpoint):
             save_weights_only=cfg.save_weights_only,
             mode=cfg.mode,
             period=cfg.period,
-            prefix=cfg.prefix
         )
 
     def find_latest_checkpoint(self):
@@ -38,7 +37,7 @@ class FileCheckpointHandler(CheckpointHandler):
         If there are no checkpoints, returns None.
         :return: The latest checkpoint path, or None if no checkpoints are found.
         """
-        paths = list(Path(self.dirpath).rglob(self.prefix + '*'))
+        paths = list(Path(self.dirpath).rglob('*'))
         if paths:
             paths.sort(key=os.path.getctime)
             latest_checkpoint_path = paths[-1]
@@ -62,7 +61,7 @@ class GCSCheckpointHandler(CheckpointHandler):
         If there are no checkpoints, returns None.
         :return: The latest checkpoint path, or None if no checkpoints are found.
         """
-        prefix = self.gcs_save_folder + self.prefix
+        prefix = self.gcs_save_folder
         paths = list(self.client.list_blobs(self.gcs_bucket, prefix=prefix))
         if paths:
             paths.sort(key=lambda x: x.time_created)
